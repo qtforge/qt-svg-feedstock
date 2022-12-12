@@ -52,21 +52,20 @@ if [[ $(uname) == "Linux" ]]; then
 fi
 
 if [[ ${HOST} =~ .*darwin.* ]]; then
-    # Let Qt set its own flags and vars
-    unset OSX_ARCH CFLAGS CXXFLAGS LDFLAGS
-
+    # Some test runs 'clang -v', but I do not want to add it as a requirement just for that.
+    ln -s "${CXX}" ${HOST}-clang || true
+    # For ltcg we cannot use libtool (or at least not the macOS 10.9 system one) due to lack of LLVM bitcode support.
+    ln -s "${LIBTOOL}" libtool || true
+    # Just in-case our strip is better than the system one.
+    ln -s "${STRIP}" strip || true
+    chmod +x ${HOST}-clang libtool strip
     # Qt passes clang flags to LD (e.g. -stdlib=c++)
     export LD=${CXX}
+    PATH=${PWD}:${PATH}
 
-    # Use xcode-avoidance scripts provided by qt-main so that the build can
-    # run with just the command-line tools, and not full XCode, installed.
-    export PATH=$PREFIX/bin/xc-avoidance:$PATH
-
-    export APPLICATION_EXTENSION_API_ONLY=NO
-
-    EXTRA_FLAGS=""
-    if [[ $(arch) == "arm64" ]]; then
-      EXTRA_FLAGS="QMAKE_APPLE_DEVICE_ARCHS=arm64"
+    PLATFORM="-sdk macosx${MACOSX_SDK_VERSION:-10.14}"
+    if [[ "${target_platform}" == "osx-arm64" ]]; then
+      PLATFORM="-device-option QMAKE_APPLE_DEVICE_ARCHS=arm64 -sdk macosx${MACOSX_SDK_VERSION:-11.0}"
     fi
 
     if [[ "${CONDA_BUILD_CROSS_COMPILATION:-}" == "1" ]]; then

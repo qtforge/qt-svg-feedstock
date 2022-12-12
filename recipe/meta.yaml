@@ -71,8 +71,16 @@ requirements:
     - {{ cdt('xcb-util-keysyms-devel') }}     # [linux]
     - {{ cdt('xcb-util-renderutil-devel') }}  # [linux]
     - {{ cdt('xcb-util-wm-devel') }}          # [linux]
+    # Although these should be host-only dependencies, they are needed when
+    # cross-compiling arm64 binaries on x86_64 since llvm-config (host/arm64)
+    # cannot be executed on x86_64 to locate libclang successfully
+    - llvmdev                           # [arm64]
+    - clangdev                          # [arm64]
   host:
     - qt-base
+    - llvmdev
+    - clangdev
+    - libclang
     - zlib
 
 test:
