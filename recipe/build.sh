@@ -102,7 +102,6 @@ if [[ ${HOST} =~ .*darwin.* ]]; then
         QMAKE_CXXFLAGS_WARN_ON="-w" \
         QMAKE_CFLAGS+="-Wno-everything" \
         QMAKE_CXXFLAGS+="-Wno-everything" \
-        $EXTRA_FLAGS \
         QMAKE_LFLAGS+="-Wno-everything -Wl,-rpath,$PREFIX/lib -L$PREFIX/lib" \
         PKG_CONFIG_EXECUTABLE=$(which pkg-config) \
         ..
